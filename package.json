@@ -1,6 +1,6 @@
 {
-  "name": "wxt-react-starter",
-  "description": "manifest.json description",
+  "name": "github-issue-notes",
+  "description": "Add personal notes to GitHub issues and PRs",
   "private": true,
   "version": "0.0.0",
   "type": "module",
