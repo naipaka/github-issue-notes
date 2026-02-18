@@ -24,3 +24,7 @@ export const getConfig = async (): Promise<Config | null> => {
 export const savePat = async (data: { pat: string }): Promise<void> => {
   await pat.setValue(data.pat);
 };
+
+export const saveGistId = async (data: { gistId: string }): Promise<void> => {
+  await gistId.setValue(data.gistId);
+};

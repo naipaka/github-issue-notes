@@ -106,4 +106,16 @@ describe('utils/storage', () => {
     expect(patItem.setValue).toHaveBeenCalledWith('new-token');
     expect(gistIdItem.setValue).not.toHaveBeenCalled();
   });
+
+  it('saveGistId writes only gistId and preserves existing pat', async () => {
+    const patItem = createItemMock();
+    const gistIdItem = createItemMock();
+    defineItemMock.mockImplementationOnce(() => patItem).mockImplementationOnce(() => gistIdItem);
+
+    const { saveGistId } = await loadModule();
+    await saveGistId({ gistId: 'new-gist-id' });
+
+    expect(gistIdItem.setValue).toHaveBeenCalledWith('new-gist-id');
+    expect(patItem.setValue).not.toHaveBeenCalled();
+  });
 });
