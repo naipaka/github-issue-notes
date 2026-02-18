@@ -11,13 +11,11 @@ vi.mock('wxt/utils/storage', () => ({
 type StorageItemMock = {
   getValue: ReturnType<typeof vi.fn>;
   setValue: ReturnType<typeof vi.fn>;
-  removeValue: ReturnType<typeof vi.fn>;
 };
 
 const createItemMock = (): StorageItemMock => ({
   getValue: vi.fn(),
   setValue: vi.fn().mockResolvedValue(undefined),
-  removeValue: vi.fn().mockResolvedValue(undefined),
 });
 
 const loadModule = async () => {
@@ -39,7 +37,7 @@ describe('utils/storage', () => {
     expect(defineItemMock).toHaveBeenNthCalledWith(2, 'local:gistId');
   });
 
-  it('getConfig returns config when both values are present', async () => {
+  it('getConfig returns config when both pat and gistId are present', async () => {
     const patItem = createItemMock();
     const gistIdItem = createItemMock();
     patItem.getValue.mockResolvedValue('token');
@@ -55,7 +53,23 @@ describe('utils/storage', () => {
     });
   });
 
-  it('getConfig returns null when pat or gistId is missing', async () => {
+  it('getConfig returns config with gistId undefined when only pat is present', async () => {
+    const patItem = createItemMock();
+    const gistIdItem = createItemMock();
+    patItem.getValue.mockResolvedValue('token');
+    gistIdItem.getValue.mockResolvedValue(null);
+    defineItemMock.mockImplementationOnce(() => patItem).mockImplementationOnce(() => gistIdItem);
+
+    const { getConfig } = await loadModule();
+    const config = await getConfig();
+
+    expect(config).toEqual({
+      pat: 'token',
+      gistId: undefined,
+    });
+  });
+
+  it('getConfig returns null when pat is missing', async () => {
     const patItem = createItemMock();
     const gistIdItem = createItemMock();
     patItem.getValue.mockResolvedValue(null);
@@ -68,11 +82,11 @@ describe('utils/storage', () => {
     expect(config).toBeNull();
   });
 
-  it('getConfig returns null when pat or gistId is an empty string', async () => {
+  it('getConfig returns null when pat is an empty string', async () => {
     const patItem = createItemMock();
     const gistIdItem = createItemMock();
-    patItem.getValue.mockResolvedValue('token');
-    gistIdItem.getValue.mockResolvedValue('');
+    patItem.getValue.mockResolvedValue('');
+    gistIdItem.getValue.mockResolvedValue('gist-123');
     defineItemMock.mockImplementationOnce(() => patItem).mockImplementationOnce(() => gistIdItem);
 
     const { getConfig } = await loadModule();
@@ -81,27 +95,15 @@ describe('utils/storage', () => {
     expect(config).toBeNull();
   });
 
-  it('saveConfig writes pat and gistId', async () => {
+  it('savePat writes only pat and preserves existing gistId', async () => {
     const patItem = createItemMock();
     const gistIdItem = createItemMock();
     defineItemMock.mockImplementationOnce(() => patItem).mockImplementationOnce(() => gistIdItem);
 
-    const { saveConfig } = await loadModule();
-    await saveConfig({ pat: 'token', gistId: 'gist-456' });
+    const { savePat } = await loadModule();
+    await savePat({ pat: 'new-token' });
 
-    expect(patItem.setValue).toHaveBeenCalledWith('token');
-    expect(gistIdItem.setValue).toHaveBeenCalledWith('gist-456');
-  });
-
-  it('clearConfig removes pat and gistId', async () => {
-    const patItem = createItemMock();
-    const gistIdItem = createItemMock();
-    defineItemMock.mockImplementationOnce(() => patItem).mockImplementationOnce(() => gistIdItem);
-
-    const { clearConfig } = await loadModule();
-    await clearConfig();
-
-    expect(patItem.removeValue).toHaveBeenCalledTimes(1);
-    expect(gistIdItem.removeValue).toHaveBeenCalledTimes(1);
+    expect(patItem.setValue).toHaveBeenCalledWith('new-token');
+    expect(gistIdItem.setValue).not.toHaveBeenCalled();
   });
 });
