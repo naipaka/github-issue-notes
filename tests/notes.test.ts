@@ -1,13 +1,15 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { getGistMock, updateGistMock } = vi.hoisted(() => ({
+const { getGistMock, updateGistMock, isManagedGistMock } = vi.hoisted(() => ({
   getGistMock: vi.fn(),
   updateGistMock: vi.fn(),
+  isManagedGistMock: vi.fn(),
 }));
 
 vi.mock('../utils/gist', () => ({
   getGist: getGistMock,
   updateGist: updateGistMock,
+  isManagedGist: isManagedGistMock,
 }));
 
 import { DEFAULT_FILENAME, deleteNote, getAllNotes, getNote, saveNote } from '../utils/notes';
@@ -18,6 +20,10 @@ afterEach(() => {
 });
 
 describe('utils/notes', () => {
+  beforeEach(() => {
+    isManagedGistMock.mockReturnValue(true);
+  });
+
   it('getAllNotes returns parsed notes data', async () => {
     getGistMock.mockResolvedValue({
       id: 'gist-1',
@@ -141,5 +147,20 @@ describe('utils/notes', () => {
         updatedAt: '2026-02-04T12:10:00.000Z',
       },
     });
+  });
+
+  it('throws when gist is not managed by extension', async () => {
+    getGistMock.mockResolvedValue({
+      id: 'gist-1',
+      files: {
+        [DEFAULT_FILENAME]: { content: '{}' },
+      },
+    });
+    isManagedGistMock.mockReturnValue(false);
+
+    await expect(getAllNotes('token', 'gist-1')).rejects.toThrow(
+      'Connected Gist is not managed by GitHub Issue Notes. Please reconnect in popup.',
+    );
+    expect(updateGistMock).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,4 @@
 import { defineExtensionMessaging } from '@webext-core/messaging';
-import type { Config } from './storage';
 import type { Note } from './notes';
 
 export type ConnectResult = {
@@ -13,10 +12,16 @@ export type CheckConnectionResult = {
   gistUrl?: string;
 };
 
+export type ClientConfig = {
+  hasPat: boolean;
+  gistId?: string;
+  pat?: string;
+};
+
 export interface ProtocolMap {
   getNote(key: string): Note | null;
   saveNote(data: { key: string; content: string }): void;
-  getConfig(): Config | null;
+  getConfig(): ClientConfig;
   savePat(data: { pat: string }): void;
   connectGist(): ConnectResult;
   checkConnection(): CheckConnectionResult;

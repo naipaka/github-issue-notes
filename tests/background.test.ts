@@ -22,7 +22,7 @@ const defineBackgroundMock = vi.fn((callback: () => void) => {
 vi.stubGlobal('defineBackground', defineBackgroundMock);
 
 // Mock messaging
-type MessageHandler = (args: { data: unknown }) => Promise<unknown>;
+type MessageHandler = (args: { data: unknown; sender?: { tab?: { id: number } } }) => Promise<unknown>;
 const messageHandlers: Record<string, MessageHandler> = {};
 const onMessageMock = vi.fn((name: string, handler: MessageHandler) => {
   messageHandlers[name] = handler;
@@ -46,10 +46,12 @@ vi.mock('@/utils/storage', () => ({
 // Mock gist
 const findOrCreateGistMock = vi.fn();
 const getGistMock = vi.fn();
+const isManagedGistMock = vi.fn();
 
 vi.mock('@/utils/gist', () => ({
   findOrCreateGist: findOrCreateGistMock,
   getGist: getGistMock,
+  isManagedGist: isManagedGistMock,
 }));
 
 // Mock notes
@@ -72,6 +74,7 @@ const loadModule = async () => {
 describe('entrypoints/background', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    isManagedGistMock.mockReturnValue(true);
   });
 
   describe('onInstalled listener', () => {
@@ -176,7 +179,7 @@ describe('entrypoints/background', () => {
   });
 
   describe('getConfig handler', () => {
-    it('returns config from storage', async () => {
+    it('returns config with PAT for extension page requests', async () => {
       await loadModule();
 
       getConfigMock.mockResolvedValue({ pat: 'token', gistId: 'gist-123' });
@@ -184,17 +187,28 @@ describe('entrypoints/background', () => {
       const result = await messageHandlers.getConfig({ data: undefined });
 
       expect(getConfigMock).toHaveBeenCalled();
-      expect(result).toEqual({ pat: 'token', gistId: 'gist-123' });
+      expect(result).toEqual({ hasPat: true, pat: 'token', gistId: 'gist-123' });
     });
 
-    it('returns null when config is not set', async () => {
+    it('returns config without PAT for content script requests', async () => {
+      await loadModule();
+
+      getConfigMock.mockResolvedValue({ pat: 'token', gistId: 'gist-123' });
+
+      const result = await messageHandlers.getConfig({ data: undefined, sender: { tab: { id: 1 } } });
+
+      expect(getConfigMock).toHaveBeenCalled();
+      expect(result).toEqual({ hasPat: true, gistId: 'gist-123' });
+    });
+
+    it('returns hasPat false when config is not set', async () => {
       await loadModule();
 
       getConfigMock.mockResolvedValue(null);
 
       const result = await messageHandlers.getConfig({ data: undefined });
 
-      expect(result).toBeNull();
+      expect(result).toEqual({ hasPat: false });
     });
   });
 
@@ -278,6 +292,7 @@ describe('entrypoints/background', () => {
         html_url: 'https://gist.github.com/user/gist-123',
         files: {},
       });
+      isManagedGistMock.mockReturnValue(true);
 
       const result = (await messageHandlers.checkConnection({ data: undefined })) as {
         connected: boolean;
@@ -287,6 +302,7 @@ describe('entrypoints/background', () => {
       expect(result.connected).toBe(true);
       expect(result.gistUrl).toBe('https://gist.github.com/user/gist-123');
       expect(getGistMock).toHaveBeenCalledWith('token', 'gist-123');
+      expect(isManagedGistMock).toHaveBeenCalled();
     });
 
     it('returns connected: false when config is null', async () => {
@@ -326,6 +342,26 @@ describe('entrypoints/background', () => {
       };
 
       expect(result.connected).toBe(false);
+    });
+
+    it('returns connected: false when gist is not managed by extension', async () => {
+      await loadModule();
+
+      getConfigMock.mockResolvedValue({ pat: 'token', gistId: 'gist-123' });
+      getGistMock.mockResolvedValue({
+        id: 'gist-123',
+        html_url: 'https://gist.github.com/user/gist-123',
+        files: {},
+      });
+      isManagedGistMock.mockReturnValue(false);
+
+      const result = (await messageHandlers.checkConnection({ data: undefined })) as {
+        connected: boolean;
+      };
+
+      expect(result.connected).toBe(false);
+      expect(getGistMock).toHaveBeenCalledWith('token', 'gist-123');
+      expect(isManagedGistMock).toHaveBeenCalled();
     });
   });
 });

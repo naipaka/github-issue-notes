@@ -14,7 +14,7 @@ export default function App() {
     const loadConfig = async () => {
       try {
         const config = await sendMessage('getConfig', undefined);
-        if (!config?.pat) {
+        if (!config.hasPat) {
           setConnectionState('no-pat');
           return;
         }

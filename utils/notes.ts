@@ -1,4 +1,4 @@
-import { getGist, updateGist } from './gist';
+import { getGist, isManagedGist, updateGist } from './gist';
 
 export const DEFAULT_FILENAME = 'github-issue-notes.json';
 
@@ -23,6 +23,9 @@ const parseNotesContent = (content: string): NotesData => {
 
 const getNotesContentFromGist = async (pat: string, gistId: string): Promise<NotesData> => {
   const gist = await getGist(pat, gistId);
+  if (!isManagedGist(gist, DEFAULT_FILENAME)) {
+    throw new Error('Connected Gist is not managed by GitHub Issue Notes. Please reconnect in popup.');
+  }
   const content = gist.files[DEFAULT_FILENAME]?.content ?? '{}';
   return parseNotesContent(content);
 };

@@ -28,7 +28,7 @@ describe('Popup App', () => {
 
   describe('when PAT is not set', () => {
     it('shows PAT not configured message', async () => {
-      sendMessageMock.mockResolvedValueOnce(null);
+      sendMessageMock.mockResolvedValueOnce({ hasPat: false });
 
       render(<App />);
 
@@ -47,7 +47,7 @@ describe('Popup App', () => {
         },
       });
 
-      sendMessageMock.mockResolvedValueOnce(null);
+      sendMessageMock.mockResolvedValueOnce({ hasPat: false });
 
       render(<App />);
 
@@ -63,7 +63,7 @@ describe('Popup App', () => {
 
   describe('when PAT is set but Gist is not connected', () => {
     it('shows Connect Gist button', async () => {
-      sendMessageMock.mockResolvedValueOnce({ pat: 'token' }); // no gistId
+      sendMessageMock.mockResolvedValueOnce({ hasPat: true }); // no gistId
 
       render(<App />);
 
@@ -76,7 +76,7 @@ describe('Popup App', () => {
 
     it('connects to Gist when clicking Connect Gist button', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token' })
+        .mockResolvedValueOnce({ hasPat: true })
         .mockResolvedValueOnce({
           gistId: 'new-gist-id',
           gistUrl: 'https://gist.github.com/user/new-gist-id',
@@ -101,7 +101,7 @@ describe('Popup App', () => {
 
     it('shows reused message when existing Gist is found', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token' })
+        .mockResolvedValueOnce({ hasPat: true })
         .mockResolvedValueOnce({
           gistId: 'existing-gist-id',
           gistUrl: 'https://gist.github.com/user/existing-gist-id',
@@ -125,7 +125,7 @@ describe('Popup App', () => {
 
     it('shows error message when connection fails', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token' })
+        .mockResolvedValueOnce({ hasPat: true })
         .mockRejectedValueOnce(new Error('Invalid token'));
 
       render(<App />);
@@ -144,7 +144,7 @@ describe('Popup App', () => {
 
   describe('when Gist is connected', () => {
     it('shows Connected badge and Gist ID', async () => {
-      sendMessageMock.mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' });
+      sendMessageMock.mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' });
 
       render(<App />);
 
@@ -157,7 +157,7 @@ describe('Popup App', () => {
 
     it('shows Open Gist link after verification', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce({ connected: true, gistUrl: 'https://gist.github.com/user/gist-123' });
 
       render(<App />);
@@ -176,7 +176,7 @@ describe('Popup App', () => {
     });
 
     it('shows Verify button', async () => {
-      sendMessageMock.mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' });
+      sendMessageMock.mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' });
 
       render(<App />);
 
@@ -187,7 +187,7 @@ describe('Popup App', () => {
 
     it('verifies connection and updates gistUrl', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce({ connected: true, gistUrl: 'https://gist.github.com/user/gist-123' });
 
       render(<App />);
@@ -207,7 +207,7 @@ describe('Popup App', () => {
 
     it('shows error and disconnects when verification fails', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce({ connected: false });
 
       render(<App />);
@@ -229,7 +229,7 @@ describe('Popup App', () => {
   describe('persistence', () => {
     it('restores connected state on re-open', async () => {
       // First open - connected
-      sendMessageMock.mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' });
+      sendMessageMock.mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' });
 
       const { unmount } = render(<App />);
 
@@ -240,7 +240,7 @@ describe('Popup App', () => {
       unmount();
 
       // Second open - still connected (from storage)
-      sendMessageMock.mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' });
+      sendMessageMock.mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' });
 
       render(<App />);
 

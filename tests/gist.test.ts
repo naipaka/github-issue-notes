@@ -43,9 +43,13 @@ describe('utils/gist', () => {
     });
     expect(JSON.parse(init?.body as string)).toEqual({
       public: false,
+      description: 'GitHub Issue Notes data store',
       files: {
         'github-issue-notes.json': {
           content: '{}',
+        },
+        '.github-issue-notes.meta.json': {
+          content: '{"app":"github-issue-notes","schema":1}',
         },
       },
     });
@@ -169,6 +173,7 @@ describe('findOrCreateGist', () => {
             html_url: 'https://gist.github.com/user/existing-gist-id',
             files: {
               'github-issue-notes.json': {},
+              '.github-issue-notes.meta.json': {},
             },
           },
         ],
@@ -225,7 +230,48 @@ describe('findOrCreateGist', () => {
     expect(createInit?.method).toBe('POST');
     expect(JSON.parse(createInit?.body as string)).toMatchObject({
       public: false,
+      description: 'GitHub Issue Notes data store',
     });
+  });
+
+  it('does not reuse gist that has note file but no extension metadata', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        jsonResponseWithHeaders(
+          [
+            {
+              id: 'non-managed-gist',
+              html_url: 'https://gist.github.com/user/non-managed-gist',
+              files: { 'github-issue-notes.json': {} },
+            },
+          ],
+          {},
+        ),
+      )
+      .mockResolvedValueOnce(
+        jsonResponseWithHeaders(
+          {
+            id: 'managed-gist-id',
+            html_url: 'https://gist.github.com/user/managed-gist-id',
+            files: {
+              'github-issue-notes.json': { content: '{}' },
+              '.github-issue-notes.meta.json': { content: '{"app":"github-issue-notes","schema":1}' },
+            },
+          },
+          {},
+          201,
+        ),
+      );
+
+    const result = await findOrCreateGist('token');
+
+    expect(result).toEqual({
+      gistId: 'managed-gist-id',
+      gistUrl: 'https://gist.github.com/user/managed-gist-id',
+      reused: false,
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('follows Link header pagination to find existing gist', async () => {
@@ -243,7 +289,10 @@ describe('findOrCreateGist', () => {
             {
               id: 'page2-gist',
               html_url: 'https://gist.github.com/user/page2-gist',
-              files: { 'github-issue-notes.json': {} },
+              files: {
+                'github-issue-notes.json': {},
+                '.github-issue-notes.meta.json': {},
+              },
             },
           ],
           {},
@@ -296,7 +345,10 @@ describe('findOrCreateGist', () => {
           {
             id: 'custom-gist',
             html_url: 'https://gist.github.com/user/custom-gist',
-            files: { 'custom-notes.json': {} },
+            files: {
+              'custom-notes.json': {},
+              '.github-issue-notes.meta.json': {},
+            },
           },
         ],
         {},

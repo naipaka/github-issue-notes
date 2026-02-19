@@ -1,5 +1,11 @@
 const GITHUB_GISTS_API = 'https://api.github.com/gists';
 const DEFAULT_FILENAME = 'github-issue-notes.json';
+const META_FILENAME = '.github-issue-notes.meta.json';
+const META_CONTENT = JSON.stringify({
+  app: 'github-issue-notes',
+  schema: 1,
+});
+const GIST_DESCRIPTION = 'GitHub Issue Notes data store';
 const RETRY_MAX_ATTEMPTS = 3;
 const RETRY_BASE_DELAY_MS = 500;
 
@@ -22,6 +28,12 @@ export type FindOrCreateResult = {
 export type GistError = {
   status: number;
   message: string;
+};
+
+export const isManagedGist = (gist: GistResponse, filename = DEFAULT_FILENAME): boolean => {
+  const hasNotesFile = filename in gist.files;
+  const metaContent = gist.files[META_FILENAME]?.content ?? '';
+  return hasNotesFile && metaContent.trim() === META_CONTENT;
 };
 
 const buildHeaders = (pat: string): HeadersInit => ({
@@ -112,9 +124,13 @@ const createGistInternal = async (
     headers: buildHeaders(pat),
     body: JSON.stringify({
       public: false,
+      description: GIST_DESCRIPTION,
       files: {
         [filename]: {
           content: '{}',
+        },
+        [META_FILENAME]: {
+          content: META_CONTENT,
         },
       },
     }),
@@ -206,7 +222,7 @@ const findGistWithFile = async (
     const gists = (await response.json()) as GistListItem[];
 
     for (const gist of gists) {
-      if (filename in gist.files) {
+      if (filename in gist.files && META_FILENAME in gist.files) {
         return gist;
       }
     }

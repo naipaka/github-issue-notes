@@ -1,6 +1,6 @@
 import { onMessage } from '@/utils/messaging';
 import { getConfig, savePat, saveGistId } from '@/utils/storage';
-import { findOrCreateGist, getGist } from '@/utils/gist';
+import { findOrCreateGist, getGist, isManagedGist } from '@/utils/gist';
 import { getNote, saveNote } from '@/utils/notes';
 
 export default defineBackground(() => {
@@ -32,8 +32,25 @@ export default defineBackground(() => {
     await saveNote(config.pat, config.gistId, data.key, data.content);
   });
 
-  onMessage('getConfig', async () => {
-    return getConfig();
+  onMessage('getConfig', async ({ sender }) => {
+    const config = await getConfig();
+    if (!config) {
+      return { hasPat: false };
+    }
+
+    const isContentScriptRequest = sender?.tab?.id != null;
+    if (isContentScriptRequest) {
+      return {
+        hasPat: true,
+        gistId: config.gistId,
+      };
+    }
+
+    return {
+      hasPat: true,
+      gistId: config.gistId,
+      pat: config.pat,
+    };
   });
 
   onMessage('savePat', async ({ data }) => {
@@ -60,6 +77,9 @@ export default defineBackground(() => {
     }
     try {
       const gist = await getGist(config.pat, config.gistId);
+      if (!isManagedGist(gist)) {
+        return { connected: false };
+      }
       return { connected: true, gistUrl: gist.html_url };
     } catch {
       return { connected: false };

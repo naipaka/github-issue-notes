@@ -35,7 +35,7 @@ describe('NoteArea', () => {
 
   describe('when PAT is not set', () => {
     it('shows Open Settings button', async () => {
-      sendMessageMock.mockResolvedValueOnce(null);
+      sendMessageMock.mockResolvedValueOnce({ hasPat: false });
 
       render(<NoteArea noteKey="owner/repo#1" />);
 
@@ -54,7 +54,7 @@ describe('NoteArea', () => {
         },
       });
 
-      sendMessageMock.mockResolvedValueOnce(null);
+      sendMessageMock.mockResolvedValueOnce({ hasPat: false });
 
       render(<NoteArea noteKey="owner/repo#1" />);
 
@@ -70,7 +70,7 @@ describe('NoteArea', () => {
 
   describe('when PAT is set but Gist is not connected', () => {
     it('shows not configured message without Open Settings button', async () => {
-      sendMessageMock.mockResolvedValueOnce({ pat: 'token' }); // no gistId
+      sendMessageMock.mockResolvedValueOnce({ hasPat: true }); // no gistId
 
       render(<NoteArea noteKey="owner/repo#1" />);
 
@@ -86,7 +86,7 @@ describe('NoteArea', () => {
   describe('when fully configured', () => {
     it('shows textarea with loaded note content', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce({ content: 'Existing note', updatedAt: '2026-02-04T12:00:00Z' });
 
       render(<NoteArea noteKey="owner/repo#1" />);
@@ -101,7 +101,7 @@ describe('NoteArea', () => {
 
     it('shows empty textarea when no note exists', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce(null);
 
       render(<NoteArea noteKey="owner/repo#1" />);
@@ -126,7 +126,7 @@ describe('NoteArea', () => {
 
     it('debounces save on input', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce(null) // getNote returns null
         .mockResolvedValue(undefined); // saveNote succeeds
 
@@ -163,7 +163,7 @@ describe('NoteArea', () => {
 
     it('saves immediately on blur', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce(null)
         .mockResolvedValue(undefined);
 
@@ -198,7 +198,7 @@ describe('NoteArea', () => {
 
     it('shows error message on save failure', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce(null)
         .mockRejectedValueOnce(new Error('Network error'));
 
@@ -222,7 +222,7 @@ describe('NoteArea', () => {
 
     it('does not save if content has not changed', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce({ content: 'Original content', updatedAt: '2026-02-04T12:00:00Z' })
         .mockResolvedValue(undefined);
 
@@ -250,7 +250,7 @@ describe('NoteArea', () => {
   describe('saving status (real timers)', () => {
     it('shows Saved status after successful save', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce(null)
         .mockResolvedValue(undefined);
 
@@ -277,7 +277,7 @@ describe('NoteArea', () => {
       });
 
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockResolvedValueOnce(null)
         .mockImplementationOnce(() => savePromise);
 
@@ -310,7 +310,7 @@ describe('NoteArea', () => {
   describe('error handling', () => {
     it('shows error when note loading fails', async () => {
       sendMessageMock
-        .mockResolvedValueOnce({ pat: 'token', gistId: 'gist-123' })
+        .mockResolvedValueOnce({ hasPat: true, gistId: 'gist-123' })
         .mockRejectedValueOnce(new Error('Failed to fetch note'));
 
       render(<NoteArea noteKey="owner/repo#1" />);

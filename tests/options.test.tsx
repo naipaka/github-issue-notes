@@ -27,7 +27,7 @@ describe('Options App', () => {
   });
 
   it('loads and displays existing PAT', async () => {
-    sendMessageMock.mockResolvedValueOnce({ pat: 'ghp_existing_token', gistId: 'gist-123' });
+    sendMessageMock.mockResolvedValueOnce({ hasPat: true, pat: 'ghp_existing_token', gistId: 'gist-123' });
 
     render(<App />);
 
@@ -41,7 +41,7 @@ describe('Options App', () => {
   });
 
   it('toggles PAT visibility when clicking Show/Hide button', async () => {
-    sendMessageMock.mockResolvedValueOnce({ pat: 'ghp_token' });
+    sendMessageMock.mockResolvedValueOnce({ hasPat: true, pat: 'ghp_token' });
 
     render(<App />);
 
@@ -64,7 +64,7 @@ describe('Options App', () => {
 
   it('saves PAT and shows success message', async () => {
     sendMessageMock
-      .mockResolvedValueOnce(null) // getConfig returns null
+      .mockResolvedValueOnce({ hasPat: false }) // getConfig returns no PAT
       .mockResolvedValueOnce(undefined); // savePat succeeds
 
     render(<App />);
@@ -87,7 +87,7 @@ describe('Options App', () => {
   });
 
   it('shows error message when PAT is empty', async () => {
-    sendMessageMock.mockResolvedValueOnce(null);
+    sendMessageMock.mockResolvedValueOnce({ hasPat: false });
 
     render(<App />);
 
@@ -103,7 +103,7 @@ describe('Options App', () => {
 
   it('shows error message when save fails', async () => {
     sendMessageMock
-      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ hasPat: false })
       .mockRejectedValueOnce(new Error('Network error'));
 
     render(<App />);
@@ -126,7 +126,7 @@ describe('Options App', () => {
   it('preserves PAT after page reload (persistence simulation)', async () => {
     // First load - save PAT
     sendMessageMock
-      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ hasPat: false })
       .mockResolvedValueOnce(undefined);
 
     const { unmount } = render(<App />);
@@ -146,7 +146,7 @@ describe('Options App', () => {
     unmount();
 
     // Second load - PAT should be restored
-    sendMessageMock.mockResolvedValueOnce({ pat: 'ghp_persistent_token' });
+    sendMessageMock.mockResolvedValueOnce({ hasPat: true, pat: 'ghp_persistent_token' });
 
     render(<App />);
 

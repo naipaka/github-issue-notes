@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ConnectResult } from '../utils/messaging';
-import type { Config } from '../utils/storage';
+import type { ClientConfig, ConnectResult } from '../utils/messaging';
 import type { Note } from '../utils/notes';
 
 const defineExtensionMessagingMock = vi.fn();
@@ -42,14 +41,15 @@ describe('Type definitions', () => {
   // These tests verify that the type definitions compile correctly.
   // If the types are incorrect, TypeScript compilation will fail.
 
-  it('Config type allows pat as required and gistId as optional', () => {
-    // gistId is optional - both cases should compile
-    const configWithoutGistId: Config = { pat: 'ghp_xxx' };
-    const configWithGistId: Config = { pat: 'ghp_xxx', gistId: 'abc123' };
+  it('ClientConfig type supports public/private response shapes', () => {
+    const publicConfig: ClientConfig = { hasPat: true, gistId: 'abc123' };
+    const extensionPageConfig: ClientConfig = { hasPat: true, gistId: 'abc123', pat: 'ghp_xxx' };
+    const emptyConfig: ClientConfig = { hasPat: false };
 
-    expect(configWithoutGistId.pat).toBe('ghp_xxx');
-    expect(configWithoutGistId.gistId).toBeUndefined();
-    expect(configWithGistId.gistId).toBe('abc123');
+    expect(publicConfig.pat).toBeUndefined();
+    expect(publicConfig.gistId).toBe('abc123');
+    expect(extensionPageConfig.pat).toBe('ghp_xxx');
+    expect(emptyConfig.hasPat).toBe(false);
   });
 
   it('Note type requires content and updatedAt', () => {
@@ -113,7 +113,7 @@ describe('ProtocolMap message definitions', () => {
     });
   });
 
-  it('defines getConfig message () => Config | null', async () => {
+  it('defines getConfig message () => ClientConfig', async () => {
     const sendMessage = vi.fn();
     defineExtensionMessagingMock.mockReturnValue({
       sendMessage,

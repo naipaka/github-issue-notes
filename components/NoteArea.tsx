@@ -81,7 +81,7 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
       try {
         const config = await sendMessage('getConfig', undefined);
 
-        if (!config || !config.pat) {
+        if (!config.hasPat) {
           setHasPat(false);
           setHasGist(false);
           setStatus('idle');
