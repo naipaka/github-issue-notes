@@ -208,7 +208,7 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder="Add your private notes here..."
-        className="w-full h-20 min-h-20 p-2 border border-gray-200 dark:border-gray-600 rounded resize-y bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full h-20! min-h-20! p-2 border border-gray-200 dark:border-gray-600 rounded resize-y bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
   );
