@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* Support GitHub's dark mode detection */
+@variant dark (&:is([data-color-mode="dark"] *, [data-color-mode="dark"]));

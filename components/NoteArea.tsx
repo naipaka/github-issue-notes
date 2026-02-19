@@ -159,11 +159,11 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
   const getStatusColor = () => {
     switch (status) {
       case 'saving':
-        return 'text-gray-500';
+        return 'text-gray-500 dark:text-gray-400';
       case 'saved':
-        return 'text-green-600';
+        return 'text-green-600 dark:text-green-400';
       case 'error':
-        return 'text-red-600';
+        return 'text-red-600 dark:text-red-400';
       default:
         return '';
     }
@@ -172,8 +172,8 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
   // Loading state
   if (status === 'loading') {
     return (
-      <div className="p-4 border rounded bg-white">
-        <p className="text-gray-500">Loading...</p>
+      <div className="p-4 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800">
+        <p className="text-gray-500 dark:text-gray-400">Loading...</p>
       </div>
     );
   }
@@ -181,8 +181,8 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
   // Not configured state
   if (!hasPat || !hasGist) {
     return (
-      <div className="p-4 border rounded bg-white">
-        <p className="text-gray-700 mb-2">GitHub Issue Notes is not configured.</p>
+      <div className="p-4 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800">
+        <p className="text-gray-700 dark:text-gray-300 mb-2">GitHub Issue Notes is not configured.</p>
         {!hasPat && (
           <button
             onClick={openOptionsPage}
@@ -198,9 +198,9 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
 
   // Configured state
   return (
-    <div className="p-4 border rounded bg-white">
+    <div className="p-4 border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800">
       <div className="flex justify-between items-center mb-2">
-        <label className="font-semibold text-gray-800">Personal Notes</label>
+        <label className="font-semibold text-gray-800 dark:text-gray-200">Personal Notes</label>
         <span className={`text-sm ${getStatusColor()}`}>{getStatusText()}</span>
       </div>
       <textarea
@@ -208,7 +208,7 @@ export default function NoteArea({ noteKey }: NoteAreaProps) {
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder="Add your private notes here..."
-        className="w-full min-h-25 p-2 border rounded resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full h-20 min-h-20 p-2 border border-gray-200 dark:border-gray-600 rounded resize-y bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
   );
