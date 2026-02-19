@@ -15,7 +15,7 @@ export default defineConfig({
   },
   // Persist browser profile data across dev restarts
   // https://wxt.dev/guide/essentials/config/browser-startup.html
-  runner: {
+  webExt: {
     chromiumArgs: ['--user-data-dir=./.wxt/chrome-data'],
   },
 });

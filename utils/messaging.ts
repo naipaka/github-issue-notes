@@ -1,14 +1,6 @@
 import { defineExtensionMessaging } from '@webext-core/messaging';
-
-export type Config = {
-  pat: string;
-  gistId?: string;
-};
-
-export type Note = {
-  content: string;
-  updatedAt: string;
-};
+import type { Config } from './storage';
+import type { Note } from './notes';
 
 export type ConnectResult = {
   gistId: string;

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Config, Note, ConnectResult } from '../utils/messaging';
+import type { ConnectResult } from '../utils/messaging';
+import type { Config } from '../utils/storage';
+import type { Note } from '../utils/notes';
 
 const defineExtensionMessagingMock = vi.fn();
 
