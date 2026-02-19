@@ -1,6 +1,6 @@
 import { onMessage } from '@/utils/messaging';
 import { getConfig, savePat, saveGistId } from '@/utils/storage';
-import { findOrCreateGist } from '@/utils/gist';
+import { findOrCreateGist, getGist } from '@/utils/gist';
 import { getNote, saveNote } from '@/utils/notes';
 
 export default defineBackground(() => {
@@ -48,5 +48,21 @@ export default defineBackground(() => {
     const result = await findOrCreateGist(config.pat);
     await saveGistId({ gistId: result.gistId });
     return result;
+  });
+
+  onMessage('checkConnection', async () => {
+    const config = await getConfig();
+    if (!config) {
+      return { connected: false };
+    }
+    if (!config.gistId) {
+      return { connected: false };
+    }
+    try {
+      const gist = await getGist(config.pat, config.gistId);
+      return { connected: true, gistUrl: gist.html_url };
+    } catch {
+      return { connected: false };
+    }
   });
 });

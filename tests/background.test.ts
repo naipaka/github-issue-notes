@@ -45,9 +45,11 @@ vi.mock('@/utils/storage', () => ({
 
 // Mock gist
 const findOrCreateGistMock = vi.fn();
+const getGistMock = vi.fn();
 
 vi.mock('@/utils/gist', () => ({
   findOrCreateGist: findOrCreateGistMock,
+  getGist: getGistMock,
 }));
 
 // Mock notes
@@ -263,6 +265,67 @@ describe('entrypoints/background', () => {
 
       expect(findOrCreateGistMock).not.toHaveBeenCalled();
       expect(saveGistIdMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('checkConnection handler', () => {
+    it('returns connected: true with gistUrl when gist exists', async () => {
+      await loadModule();
+
+      getConfigMock.mockResolvedValue({ pat: 'token', gistId: 'gist-123' });
+      getGistMock.mockResolvedValue({
+        id: 'gist-123',
+        html_url: 'https://gist.github.com/user/gist-123',
+        files: {},
+      });
+
+      const result = (await messageHandlers.checkConnection({ data: undefined })) as {
+        connected: boolean;
+        gistUrl?: string;
+      };
+
+      expect(result.connected).toBe(true);
+      expect(result.gistUrl).toBe('https://gist.github.com/user/gist-123');
+      expect(getGistMock).toHaveBeenCalledWith('token', 'gist-123');
+    });
+
+    it('returns connected: false when config is null', async () => {
+      await loadModule();
+
+      getConfigMock.mockResolvedValue(null);
+
+      const result = (await messageHandlers.checkConnection({ data: undefined })) as {
+        connected: boolean;
+      };
+
+      expect(result.connected).toBe(false);
+      expect(getGistMock).not.toHaveBeenCalled();
+    });
+
+    it('returns connected: false when gistId is not set', async () => {
+      await loadModule();
+
+      getConfigMock.mockResolvedValue({ pat: 'token' });
+
+      const result = (await messageHandlers.checkConnection({ data: undefined })) as {
+        connected: boolean;
+      };
+
+      expect(result.connected).toBe(false);
+      expect(getGistMock).not.toHaveBeenCalled();
+    });
+
+    it('returns connected: false when getGist throws error', async () => {
+      await loadModule();
+
+      getConfigMock.mockResolvedValue({ pat: 'token', gistId: 'deleted-gist' });
+      getGistMock.mockRejectedValue(new Error('Gist not found'));
+
+      const result = (await messageHandlers.checkConnection({ data: undefined })) as {
+        connected: boolean;
+      };
+
+      expect(result.connected).toBe(false);
     });
   });
 });

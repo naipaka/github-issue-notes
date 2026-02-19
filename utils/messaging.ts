@@ -16,12 +16,18 @@ export type ConnectResult = {
   reused: boolean;
 };
 
+export type CheckConnectionResult = {
+  connected: boolean;
+  gistUrl?: string;
+};
+
 export interface ProtocolMap {
   getNote(key: string): Note | null;
   saveNote(data: { key: string; content: string }): void;
   getConfig(): Config | null;
   savePat(data: { pat: string }): void;
   connectGist(): ConnectResult;
+  checkConnection(): CheckConnectionResult;
 }
 
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
