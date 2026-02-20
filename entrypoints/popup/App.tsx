@@ -124,9 +124,9 @@ export default function App() {
           </div>
 
           <div className="bg-gray-50 rounded-md p-3 text-sm">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 mb-2 whitespace-nowrap">
               <span className="text-gray-600">Gist ID:</span>
-              <code className="text-xs bg-gray-200 px-1 rounded">{gistId}</code>
+              <code className="text-xs bg-gray-200 px-1 rounded">{gistId?.slice(0, 8)}...</code>
             </div>
 
             <div className="flex gap-2">
@@ -143,7 +143,7 @@ export default function App() {
               <button
                 onClick={handleVerify}
                 disabled={connectionState === 'verifying'}
-                className="text-gray-500 hover:text-gray-700 text-sm disabled:text-gray-400"
+                className="text-purple-600 hover:text-purple-800 text-sm disabled:text-purple-400"
               >
                 {connectionState === 'verifying' ? 'Verifying...' : 'Verify'}
               </button>
