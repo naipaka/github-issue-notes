@@ -95,7 +95,7 @@ describe('Popup App', () => {
         expect(screen.getByText('Connected')).toBeInTheDocument();
       });
 
-      expect(screen.getByText('new-gist-id')).toBeInTheDocument();
+      expect(screen.getByText('new-gist...')).toBeInTheDocument();
       expect(screen.getByText('(new Gist created)')).toBeInTheDocument();
     });
 
@@ -152,7 +152,7 @@ describe('Popup App', () => {
         expect(screen.getByText('Connected')).toBeInTheDocument();
       });
 
-      expect(screen.getByText('gist-123')).toBeInTheDocument();
+      expect(screen.getByText('gist-123...')).toBeInTheDocument();
     });
 
     it('shows Open Gist link after verification', async () => {
@@ -246,7 +246,7 @@ describe('Popup App', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Connected')).toBeInTheDocument();
-        expect(screen.getByText('gist-123')).toBeInTheDocument();
+        expect(screen.getByText('gist-123...')).toBeInTheDocument();
       });
     });
   });
