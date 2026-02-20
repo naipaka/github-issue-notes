@@ -96,6 +96,9 @@ Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your p
 
 1. Navigate to any GitHub Issue or PR page
 2. Find the **"Personal Notes"** section in the sidebar (below Notifications)
+
+![Notes Location](docs/images/notes-location.png)
+
 3. Type your notes - they **auto-save** after 1 second of inactivity
 4. You'll see **"Saving..."** then **"Saved"** to confirm
 
