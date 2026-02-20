@@ -5,7 +5,7 @@
 
 Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your private Gist and synced across devices.
 
-<!-- ![Screenshot](docs/screenshot.png) -->
+![Screenshot](docs/images/main.png)
 
 ## Features
 
@@ -47,43 +47,99 @@ Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your p
 
 ## Usage
 
-### Initial Setup
+### Step 1: Get a GitHub Personal Access Token (PAT)
 
-1. **Get a GitHub Personal Access Token (PAT)**
-   - Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
-   - Generate a new token (classic) with the `gist` scope
-   - Copy the token
+1. Go to **GitHub Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens**
+   - Direct link: https://github.com/settings/personal-access-tokens/new
 
-2. **Configure the Extension**
-   - Click the extension icon and go to Options (or right-click > Options)
-   - Paste your PAT and click Save
+![GitHub Token Settings](docs/images/setup-1-token-page.png)
 
-3. **Connect Gist**
-   - Click the extension icon
-   - Click "Connect Gist"
-   - The extension will create a private Gist or reuse an existing one
+2. Configure the token:
+   - **Token name**: `GitHub Issue Notes` (or any name you prefer)
+   - **Expiration**: Choose your preferred expiration
+   - **Repository access**: Select **"Public Repositories (read-only)"** (Gists don't require repo access)
+   - **Account permissions**: Expand and set **Gists** to **"Read and write"**
 
-### Taking Notes
+![Token Permissions](docs/images/setup-2-permissions.png)
+
+3. Click **"Generate token"** and **copy the token** (you won't see it again!)
+
+![Generate Token](docs/images/setup-3-generate.png)
+
+> **Note**: Classic tokens with `gist` scope also work if you prefer.
+
+### Step 2: Configure the Extension
+
+1. Click the extension icon in Chrome toolbar, then click **"Open Settings"**
+   - Or right-click the extension icon → **"Options"**
+
+![Options Page](docs/images/setup-4-options.png)
+
+2. Paste your PAT and click **"Save"**
+
+![Save PAT](docs/images/setup-5-saved.png)
+
+### Step 3: Connect Gist
+
+1. Click the extension icon to open the popup
+2. Click **"Connect Gist"**
+
+![Connect Gist](docs/images/setup-6-connect.png)
+
+3. Once connected, you'll see **"Connected"** with a link to your Gist
+
+![Connected](docs/images/setup-7-connected.png)
+
+> **Note**: If you already have a Gist with the file `github-issue-notes.json`, the extension will reuse it instead of creating a new one.
+
+### Step 4: Start Taking Notes!
 
 1. Navigate to any GitHub Issue or PR page
-2. Find the "Personal Notes" section in the sidebar (below Notifications)
-3. Type your notes - they auto-save after 1 second
-4. Notes persist across page reloads and devices
+2. Find the **"Personal Notes"** section in the sidebar (below Notifications)
+3. Type your notes - they **auto-save** after 1 second of inactivity
+4. You'll see **"Saving..."** then **"Saved"** to confirm
+
+![Taking Notes](docs/images/usage-note-saving.png)
 
 ## Permissions
 
 | Permission | Purpose |
 |------------|---------|
-| `storage` | Save your PAT and Gist ID locally |
-| `host_permissions` (api.github.com) | Access GitHub Gist API to read/write notes |
+| `storage` | Store your PAT and Gist ID locally in your browser |
+| `host_permissions` (api.github.com) | Access GitHub Gist API to read/write your notes |
+
+**Note**: Your PAT is stored locally and is only sent to GitHub's official API. It is never exposed to web pages or third parties.
 
 ## Privacy
 
 - **PAT**: Stored locally in your browser, never sent to any server except GitHub API
 - **Notes**: Stored in your private GitHub Gist (only you can access)
 - **No Analytics**: This extension does not collect any usage data
+- **No Tracking**: We don't track which Issues/PRs you visit
 
 See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
+
+## FAQ
+
+### Why do I need a Personal Access Token?
+
+The extension needs to access the GitHub Gist API to store your notes. GitHub requires authentication for this, and a PAT with Gists read/write permission is the minimal permission needed.
+
+### Where are my notes stored?
+
+Your notes are stored in a **private Gist** in your GitHub account. You can view and edit this Gist directly at https://gist.github.com. The file is named `github-issue-notes.json`.
+
+### Can others see my notes?
+
+No. The Gist is created as **private**, which means only you can see it when logged into your GitHub account.
+
+### What happens if I uninstall the extension?
+
+Your notes remain in your GitHub Gist. If you reinstall the extension and reconnect with the same GitHub account, your notes will be restored.
+
+### Does it work on GitHub Enterprise?
+
+Not currently. The extension only supports github.com.
 
 ## Development
 
@@ -123,6 +179,10 @@ utils/
 ├── gist.ts         # GitHub Gist API client
 └── notes.ts        # Notes data management
 ```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or pull request.
 
 ## License
 
