@@ -1,7 +1,7 @@
 # GitHub Issue Notes
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-<!-- [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/EXTENSION_ID.svg)](https://chrome.google.com/webstore/detail/EXTENSION_ID) -->
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/iodoilfmmpjkkcamhbmdjpbjecmgladm.svg)](https://chromewebstore.google.com/detail/github-issue-notes/iodoilfmmpjkkcamhbmdjpbjecmgladm)
 
 Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your private Gist and synced across devices.
 
@@ -17,9 +17,9 @@ Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your p
 
 ## Installation
 
-### Chrome Web Store (Coming Soon)
+### Chrome Web Store
 
-<!-- [Install from Chrome Web Store](https://chrome.google.com/webstore/detail/EXTENSION_ID) -->
+[Install from Chrome Web Store](https://chromewebstore.google.com/detail/github-issue-notes/iodoilfmmpjkkcamhbmdjpbjecmgladm)
 
 ### Development Version
 
