@@ -7,6 +7,8 @@ Add personal notes to GitHub issues and PRs
 ## Detailed Description (copy below for store)
 
 ```
+Ever subscribed to an open source issue or PR and later forgot why? This extension lets you add personal notes to each issue and PR, so you always remember the context.
+
 Add personal notes to any GitHub Issue or Pull Request page. Your notes are saved to your private GitHub Gist and synced across all your devices.
 
 Features:
