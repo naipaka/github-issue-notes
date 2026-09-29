@@ -10,7 +10,7 @@
 |------|---------|------------------|
 | GitHub Personal Access Token (PAT) | Authenticate with GitHub Gist API | Local browser storage (`chrome.storage.local`) |
 | Gist ID | Identify your notes storage | Local browser storage (`chrome.storage.local`) |
-| Note content | Your personal notes | Your private GitHub Gist |
+| Note content | Your personal notes | A secret Gist in your GitHub account |
 
 ### What We Do NOT Collect
 
@@ -31,9 +31,9 @@ Your PAT and Gist ID are stored locally in your browser using `chrome.storage.lo
 
 ### GitHub Gist
 
-Your notes are stored in a **private GitHub Gist** under your GitHub account. This means:
+Your notes are stored in a **secret GitHub Gist** under your GitHub account. This means:
 
-- Only you can access your notes (via your GitHub account)
+- The Gist is not listed publicly, but anyone who has its URL can see it. Keep the URL to yourself
 - Notes are stored on GitHub's servers under their [privacy policy](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement)
 - You can delete the Gist at any time from your GitHub account
 
@@ -88,8 +88,8 @@ We may update this privacy policy from time to time. Changes will be reflected i
 
 ## Contact
 
-If you have questions about this privacy policy, please open an issue on our [GitHub repository](https://github.com/YOUR_USERNAME/github-issue-notes/issues).
+If you have questions about this privacy policy, please open an issue on our [GitHub repository](https://github.com/naipaka/github-issue-notes/issues).
 
 ---
 
-**Last updated**: February 2026
+**Last updated**: September 2026

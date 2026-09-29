@@ -3,17 +3,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/iodoilfmmpjkkcamhbmdjpbjecmgladm.svg)](https://chromewebstore.google.com/detail/github-issue-notes/iodoilfmmpjkkcamhbmdjpbjecmgladm)
 
-Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your private Gist and synced across devices.
+A Chrome extension to keep personal notes on GitHub Issues and Pull Requests.
+When a notification arrives long after you subscribed, your note tells you why you were following it.
+Notes are saved to your own secret Gist and synced across devices.
 
 ![Screenshot](docs/images/main.png)
 
 ## Features
 
-- **Personal Notes on Issues/PRs** - Add private notes directly on GitHub Issue and PR pages
-- **Private Gist Storage** - Notes are saved to your own GitHub Private Gist (only you can access)
-- **Auto-save** - Notes are automatically saved as you type (1 second debounce)
-- **Dark Mode Support** - Seamlessly adapts to GitHub's dark mode
-- **Cross-device Sync** - Access your notes from any device via Gist
+- **Notes on Issues and PRs** - Write a note in the sidebar of any GitHub Issue or Pull Request page, right below Notifications
+- **Stored in your own Gist** - Notes are saved to a secret Gist in your GitHub account, not on a server run by the developer. Anyone who has the Gist's URL can see it, so keep the URL to yourself
+- **Auto-save** - Notes are saved a second after you stop typing
+- **Dark mode** - Follows GitHub's dark mode when your GitHub theme is set to dark
+- **Cross-device sync** - Set up the extension with the same GitHub account on another computer to see the same notes
 
 ## Installation
 
@@ -21,11 +23,13 @@ Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your p
 
 [Install from Chrome Web Store](https://chromewebstore.google.com/detail/github-issue-notes/iodoilfmmpjkkcamhbmdjpbjecmgladm)
 
-### Development Version
+### Build from source
+
+Requires Node.js (CI uses version 22) and pnpm.
 
 1. Clone this repository
    ```bash
-   git clone https://github.com/YOUR_USERNAME/github-issue-notes.git
+   git clone https://github.com/naipaka/github-issue-notes.git
    cd github-issue-notes
    ```
 
@@ -90,7 +94,7 @@ Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your p
 
 ![Connected](docs/images/setup-7-connected.png)
 
-> **Note**: If you already have a Gist with the file `github-issue-notes.json`, the extension will reuse it instead of creating a new one.
+> **Note**: If you have connected before with the same GitHub account, the extension reuses the Gist it created, so your existing notes appear on this computer too.
 
 ### Step 4: Start Taking Notes!
 
@@ -111,14 +115,11 @@ Add personal notes to GitHub Issues and Pull Requests. Notes are saved to your p
 | `storage` | Store your PAT and Gist ID locally in your browser |
 | `host_permissions` (api.github.com) | Access GitHub Gist API to read/write your notes |
 
-**Note**: Your PAT is stored locally and is only sent to GitHub's official API. It is never exposed to web pages or third parties.
-
 ## Privacy
 
-- **PAT**: Stored locally in your browser, never sent to any server except GitHub API
-- **Notes**: Stored in your private GitHub Gist (only you can access)
-- **No Analytics**: This extension does not collect any usage data
-- **No Tracking**: We don't track which Issues/PRs you visit
+- **PAT**: Stored locally in your browser and sent only to the GitHub API. Web pages cannot read it
+- **Notes**: Stored in a secret Gist in your GitHub account. It is not listed publicly, but anyone who has its URL can see it
+- **No analytics or tracking**: The extension talks only to `api.github.com` and collects no usage data. Only the Issues and PRs you write notes on are recorded, as keys in your Gist
 
 See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
@@ -128,13 +129,17 @@ See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 The extension needs to access the GitHub Gist API to store your notes. GitHub requires authentication for this, and a PAT with Gists read/write permission is the minimal permission needed.
 
+### Why a Gist?
+
+Browser storage such as localStorage cannot sync your notes between computers, and `chrome.storage.sync` has a small quota and works only in Chrome. A server of our own would mean keeping your personal notes on the developer's side and adding a sign-in system. A Gist syncs through your GitHub account, needs no backend, works with a token that only has Gist access, and lets you read and edit your notes directly on GitHub.
+
 ### Where are my notes stored?
 
-Your notes are stored in a **private Gist** in your GitHub account. You can view and edit this Gist directly at https://gist.github.com. The file is named `github-issue-notes.json`.
+Your notes are stored in a **secret Gist** in your GitHub account. You can view and edit this Gist directly at https://gist.github.com. The file is named `github-issue-notes.json`.
 
 ### Can others see my notes?
 
-No. The Gist is created as **private**, which means only you can see it when logged into your GitHub account.
+Only if they have the Gist's URL. The Gist is created as a **secret Gist**, so it is not listed publicly, but anyone who has its URL can see it. Keep the URL to yourself.
 
 ### What happens if I uninstall the extension?
 
@@ -152,6 +157,7 @@ Not currently. The extension only supports github.com.
 - [React](https://react.dev/) - UI Library
 - [TypeScript](https://www.typescriptlang.org/) - Type Safety
 - [Tailwind CSS v4](https://tailwindcss.com/) - Styling
+- [Vitest](https://vitest.dev/) - Testing
 
 ### Commands
 
@@ -163,6 +169,8 @@ pnpm compile      # TypeScript type check
 pnpm test         # Run tests
 pnpm zip          # Create ZIP for store submission
 ```
+
+`pnpm dev` opens Chrome with the extension loaded. Your PAT and Gist settings are kept in `.wxt/chrome-data`, so you don't need to enter them again after restarting.
 
 ### Project Structure
 
@@ -180,12 +188,15 @@ utils/
 ├── messaging.ts    # Type-safe messaging between scripts
 ├── storage.ts      # Chrome storage wrapper
 ├── gist.ts         # GitHub Gist API client
-└── notes.ts        # Notes data management
+├── notes.ts        # Notes data management
+└── noteKey.ts      # Extracts the note key (owner/repo#number) from the page URL
+
+tests/              # Vitest tests
 ```
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or pull request.
+Contributions are welcome! Please open an issue or pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started.
 
 ## License
 
